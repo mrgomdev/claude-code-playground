@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anna & Elsa - Frozen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a2e 0%, #16213e 30%, #0f3460 60%, #1a5f7a 100%);
+            overflow: hidden;
+            font-family: 'Georgia', serif;
+        }
+
+        /* Aurora Background */
+        .aurora {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .aurora::before,
+        .aurora::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(ellipse at 30% 20%, rgba(120, 200, 255, 0.3) 0%, transparent 50%),
+                        radial-gradient(ellipse at 70% 30%, rgba(180, 100, 255, 0.2) 0%, transparent 40%),
+                        radial-gradient(ellipse at 50% 60%, rgba(100, 220, 255, 0.25) 0%, transparent 45%);
+            animation: aurora 15s ease-in-out infinite;
+        }
+
+        .aurora::after {
+            animation-delay: -7s;
+            background: radial-gradient(ellipse at 60% 40%, rgba(150, 180, 255, 0.2) 0%, transparent 50%),
+                        radial-gradient(ellipse at 30% 70%, rgba(200, 150, 255, 0.15) 0%, transparent 40%);
+        }
+
+        @keyframes aurora {
+            0%, 100% { transform: rotate(0deg) scale(1); opacity: 0.8; }
+            50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+        }
+
+        /* Snow */
+        .snowflakes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .snowflake {
+            position: absolute;
+            color: white;
+            font-size: 1rem;
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.8);
+            animation: fall linear infinite;
+            opacity: 0.8;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.8;
+            }
+            90% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Title */
+        .title {
+            font-size: 4rem;
+            color: #a8e6ff;
+            text-shadow: 0 0 20px rgba(150, 220, 255, 0.8),
+                         0 0 40px rgba(150, 220, 255, 0.5),
+                         0 0 60px rgba(150, 220, 255, 0.3);
+            margin-bottom: 50px;
+            animation: glow 3s ease-in-out infinite;
+            letter-spacing: 10px;
+        }
+
+        @keyframes glow {
+            0%, 100% { text-shadow: 0 0 20px rgba(150, 220, 255, 0.8), 0 0 40px rgba(150, 220, 255, 0.5); }
+            50% { text-shadow: 0 0 30px rgba(150, 220, 255, 1), 0 0 60px rgba(150, 220, 255, 0.8), 0 0 80px rgba(150, 220, 255, 0.5); }
+        }
+
+        /* Characters Container */
+        .characters {
+            display: flex;
+            gap: 80px;
+            align-items: flex-end;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* Character Card */
+        .character {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .character:hover {
+            transform: scale(1.05);
+        }
+
+        /* Elsa */
+        .elsa-figure {
+            position: relative;
+            width: 200px;
+            height: 350px;
+        }
+
+        .elsa-hair {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 100px;
+            background: linear-gradient(180deg, #f5e6d3 0%, #e8d4b8 100%);
+            border-radius: 50% 50% 40% 40%;
+        }
+
+        .elsa-braid {
+            position: absolute;
+            top: 80px;
+            left: 30px;
+            width: 25px;
+            height: 180px;
+            background: linear-gradient(180deg, #f5e6d3, #e8d4b8);
+            border-radius: 15px;
+            transform: rotate(-15deg);
+        }
+
+        .elsa-braid::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 15px;
+            background: #87ceeb;
+            border-radius: 50%;
+        }
+
+        .elsa-face {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 70px;
+            background: #ffe4c4;
+            border-radius: 50% 50% 45% 45%;
+        }
+
+        .elsa-eyes {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .elsa-eye {
+            width: 12px;
+            height: 14px;
+            background: #4a90d9;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .elsa-eye::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .elsa-smile {
+            position: absolute;
+            top: 48px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 15px;
+            height: 8px;
+            border: none;
+            border-bottom: 3px solid #d4837a;
+            border-radius: 0 0 50% 50%;
+        }
+
+        .elsa-dress {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 200px;
+            background: linear-gradient(180deg, #87ceeb 0%, #4a90d9 50%, #1e5799 100%);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+            box-shadow: 0 0 30px rgba(135, 206, 235, 0.5);
+        }
+
+        .elsa-dress::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20'%3E%3Cpath d='M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z' fill='rgba(255,255,255,0.3)'/%3E%3C/svg%3E");
+            background-size: 30px 30px;
+            opacity: 0.5;
+        }
+
+        .elsa-cape {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 130px;
+            height: 220px;
+            background: linear-gradient(180deg, rgba(135, 206, 235, 0.6), rgba(135, 206, 235, 0.2));
+            clip-path: polygon(35% 0%, 65% 0%, 100% 100%, 0% 100%);
+            animation: capeFlow 4s ease-in-out infinite;
+        }
+
+        @keyframes capeFlow {
+            0%, 100% { transform: translateX(-50%) skewX(0deg); }
+            50% { transform: translateX(-50%) skewX(3deg); }
+        }
+
+        .elsa-arms {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+        }
+
+        .elsa-arm {
+            position: absolute;
+            width: 50px;
+            height: 15px;
+            background: #87ceeb;
+            border-radius: 10px;
+        }
+
+        .elsa-arm.left {
+            left: 0;
+            transform: rotate(-30deg);
+        }
+
+        .elsa-arm.right {
+            right: 0;
+            transform: rotate(30deg);
+        }
+
+        /* Anna */
+        .anna-figure {
+            position: relative;
+            width: 200px;
+            height: 350px;
+        }
+
+        .anna-hair {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 85px;
+            height: 110px;
+            background: linear-gradient(180deg, #8b4513 0%, #a0522d 50%, #cd853f 100%);
+            border-radius: 50% 50% 40% 40%;
+        }
+
+        .anna-braids {
+            position: absolute;
+            top: 60px;
+            width: 100%;
+        }
+
+        .anna-braid {
+            position: absolute;
+            width: 20px;
+            height: 150px;
+            background: linear-gradient(180deg, #8b4513, #cd853f);
+            border-radius: 10px;
+        }
+
+        .anna-braid.left {
+            left: 25px;
+            transform: rotate(10deg);
+        }
+
+        .anna-braid.right {
+            right: 25px;
+            transform: rotate(-10deg);
+        }
+
+        .anna-braid::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 12px;
+            height: 12px;
+            background: #228b22;
+            border-radius: 50%;
+        }
+
+        .anna-face {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 55px;
+            height: 65px;
+            background: #ffe4c4;
+            border-radius: 50% 50% 45% 45%;
+        }
+
+        .anna-freckles {
+            position: absolute;
+            top: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 10px;
+        }
+
+        .anna-freckle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: #d4a574;
+            border-radius: 50%;
+        }
+
+        .anna-eyes {
+            position: absolute;
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 45px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .anna-eye {
+            width: 11px;
+            height: 13px;
+            background: #2e8b57;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .anna-eye::after {
+            content: '';
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 4px;
+            height: 4px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .anna-smile {
+            position: absolute;
+            top: 45px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 18px;
+            height: 10px;
+            border: none;
+            border-bottom: 3px solid #d4837a;
+            border-radius: 0 0 50% 50%;
+        }
+
+        .anna-dress {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 200px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 30%, #2d4a3e 100%);
+            clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+        }
+
+        .anna-bodice {
+            position: absolute;
+            top: 95px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 50px;
+            height: 60px;
+            background: linear-gradient(180deg, #1a1a1a 0%, #2d2d2d 100%);
+            border-radius: 0 0 10px 10px;
+        }
+
+        .anna-bodice::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 40px;
+            background: linear-gradient(180deg, #ff69b4, #ff1493);
+            clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+        }
+
+        .anna-skirt-pattern {
+            position: absolute;
+            top: 150px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 140px;
+        }
+
+        .anna-rosemaling {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 20px,
+                rgba(255, 215, 0, 0.3) 20px,
+                rgba(255, 215, 0, 0.3) 22px
+            );
+        }
+
+        .anna-arms {
+            position: absolute;
+            top: 110px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+        }
+
+        .anna-arm {
+            position: absolute;
+            width: 45px;
+            height: 12px;
+            background: #1a1a2e;
+            border-radius: 8px;
+        }
+
+        .anna-arm.left {
+            left: 5px;
+            transform: rotate(-25deg);
+        }
+
+        .anna-arm.right {
+            right: 5px;
+            transform: rotate(25deg);
+        }
+
+        /* Character Names */
+        .character-name {
+            margin-top: 20px;
+            font-size: 2rem;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px currentColor;
+        }
+
+        .elsa .character-name {
+            color: #87ceeb;
+        }
+
+        .anna .character-name {
+            color: #ff69b4;
+        }
+
+        /* Magic Effects */
+        .magic-sparkle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: white;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: sparkle 1s ease-out forwards;
+        }
+
+        @keyframes sparkle {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(2) rotate(180deg);
+                opacity: 0;
+            }
+        }
+
+        /* Ice Crystal Effects */
+        .ice-crystal {
+            position: fixed;
+            pointer-events: none;
+            z-index: 15;
+            animation: crystalGrow 2s ease-out forwards;
+        }
+
+        @keyframes crystalGrow {
+            0% {
+                transform: scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1) rotate(60deg);
+                opacity: 0;
+            }
+        }
+
+        /* Quote */
+        .quote {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.5rem;
+            color: rgba(168, 230, 255, 0.8);
+            text-align: center;
+            font-style: italic;
+            text-shadow: 0 0 10px rgba(150, 220, 255, 0.5);
+            animation: fadeInOut 8s ease-in-out infinite;
+        }
+
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0; }
+            20%, 80% { opacity: 1; }
+        }
+
+        /* Instructions */
+        .instructions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.9rem;
+            text-align: right;
+        }
+    </style>
+</head>
+<body>
+    <div class="aurora"></div>
+    <div class="snowflakes" id="snowflakes"></div>
+
+    <div class="container">
+        <h1 class="title">FROZEN</h1>
+
+        <div class="characters">
+            <!-- Elsa -->
+            <div class="character elsa" onclick="createIceMagic(event)">
+                <div class="elsa-figure">
+                    <div class="elsa-cape"></div>
+                    <div class="elsa-hair"></div>
+                    <div class="elsa-braid"></div>
+                    <div class="elsa-face">
+                        <div class="elsa-eyes">
+                            <div class="elsa-eye"></div>
+                            <div class="elsa-eye"></div>
+                        </div>
+                        <div class="elsa-smile"></div>
+                    </div>
+                    <div class="elsa-dress"></div>
+                    <div class="elsa-arms">
+                        <div class="elsa-arm left"></div>
+                        <div class="elsa-arm right"></div>
+                    </div>
+                </div>
+                <div class="character-name">ELSA</div>
+            </div>
+
+            <!-- Anna -->
+            <div class="character anna" onclick="createHeartMagic(event)">
+                <div class="anna-figure">
+                    <div class="anna-hair">
+                        <div class="anna-braids">
+                            <div class="anna-braid left"></div>
+                            <div class="anna-braid right"></div>
+                        </div>
+                    </div>
+                    <div class="anna-face">
+                        <div class="anna-freckles">
+                            <div class="anna-freckle" style="left: 5px;"></div>
+                            <div class="anna-freckle" style="left: 12px;"></div>
+                            <div class="anna-freckle" style="left: 20px;"></div>
+                            <div class="anna-freckle" style="right: 5px;"></div>
+                            <div class="anna-freckle" style="right: 12px;"></div>
+                        </div>
+                        <div class="anna-eyes">
+                            <div class="anna-eye"></div>
+                            <div class="anna-eye"></div>
+                        </div>
+                        <div class="anna-smile"></div>
+                    </div>
+                    <div class="anna-dress"></div>
+                    <div class="anna-bodice"></div>
+                    <div class="anna-skirt-pattern">
+                        <div class="anna-rosemaling"></div>
+                    </div>
+                    <div class="anna-arms">
+                        <div class="anna-arm left"></div>
+                        <div class="anna-arm right"></div>
+                    </div>
+                </div>
+                <div class="character-name">ANNA</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="quote" id="quote">"Some people are worth melting for."</div>
+
+    <div class="instructions">
+        Click Elsa for ice magic ❄️<br>
+        Click Anna for heart magic 💕<br>
+        Press Space for snow burst
+    </div>
+
+    <script>
+        // Snowflakes
+        const snowflakesContainer = document.getElementById('snowflakes');
+        const snowflakeChars = ['❄', '❅', '❆', '✧', '✦', '*'];
+
+        function createSnowflake() {
+            const snowflake = document.createElement('div');
+            snowflake.className = 'snowflake';
+            snowflake.textContent = snowflakeChars[Math.floor(Math.random() * snowflakeChars.length)];
+            snowflake.style.left = Math.random() * 100 + 'vw';
+            snowflake.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+            snowflake.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            snowflake.style.animationDelay = Math.random() * 2 + 's';
+            snowflakesContainer.appendChild(snowflake);
+
+            setTimeout(() => snowflake.remove(), 12000);
+        }
+
+        setInterval(createSnowflake, 200);
+
+        // Ice Magic (Elsa)
+        function createIceMagic(event) {
+            const colors = ['#87ceeb', '#b0e0e6', '#add8e6', '#ffffff', '#e0ffff'];
+
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.className = 'magic-sparkle';
+                    sparkle.style.left = (event.clientX + (Math.random() - 0.5) * 100) + 'px';
+                    sparkle.style.top = (event.clientY + (Math.random() - 0.5) * 100) + 'px';
+                    sparkle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    sparkle.style.boxShadow = `0 0 10px ${sparkle.style.background}`;
+                    document.body.appendChild(sparkle);
+
+                    setTimeout(() => sparkle.remove(), 1000);
+                }, i * 50);
+            }
+
+            // Create ice crystal
+            const crystal = document.createElement('div');
+            crystal.className = 'ice-crystal';
+            crystal.innerHTML = '❄';
+            crystal.style.left = event.clientX + 'px';
+            crystal.style.top = event.clientY + 'px';
+            crystal.style.fontSize = '3rem';
+            crystal.style.color = '#87ceeb';
+            crystal.style.textShadow = '0 0 20px #87ceeb';
+            document.body.appendChild(crystal);
+
+            setTimeout(() => crystal.remove(), 2000);
+        }
+
+        // Heart Magic (Anna)
+        function createHeartMagic(event) {
+            const colors = ['#ff69b4', '#ff1493', '#ffb6c1', '#ff6b6b', '#ffc0cb'];
+
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.style.position = 'fixed';
+                    heart.style.left = (event.clientX + (Math.random() - 0.5) * 80) + 'px';
+                    heart.style.top = (event.clientY + (Math.random() - 0.5) * 80) + 'px';
+                    heart.style.fontSize = (Math.random() * 1.5 + 0.5) + 'rem';
+                    heart.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    heart.style.pointerEvents = 'none';
+                    heart.style.zIndex = '20';
+                    heart.innerHTML = '💕';
+                    heart.style.animation = 'sparkle 1.5s ease-out forwards';
+                    document.body.appendChild(heart);
+
+                    setTimeout(() => heart.remove(), 1500);
+                }, i * 80);
+            }
+        }
+
+        // Quotes
+        const quotes = [
+            '"Some people are worth melting for."',
+            '"Let it go, let it go!"',
+            '"Do you want to build a snowman?"',
+            '"The cold never bothered me anyway."',
+            '"Love is an open door."',
+            '"Only an act of true love can thaw a frozen heart."',
+            '"I like warm hugs!"',
+            '"For the first time in forever..."'
+        ];
+
+        let quoteIndex = 0;
+        const quoteElement = document.getElementById('quote');
+
+        setInterval(() => {
+            quoteIndex = (quoteIndex + 1) % quotes.length;
+            quoteElement.textContent = quotes[quoteIndex];
+        }, 8000);
+
+        // Space bar for snow burst
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                for (let i = 0; i < 30; i++) {
+                    setTimeout(createSnowflake, i * 30);
+                }
+            }
+        });
+
+        // Initial snowflakes
+        for (let i = 0; i < 20; i++) {
+            setTimeout(createSnowflake, i * 100);
+        }
+    </script>
+</body>
+</html>
